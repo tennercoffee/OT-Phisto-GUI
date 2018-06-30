@@ -1,0 +1,1863 @@
+<html>
+	<head>
+	    <title>Phisto</title>
+		<!--<meta name="google-signin-client_id" content="141625252556-ctfj4jaa1r9g66c660l5p573brf48u87.apps.googleusercontent.com">-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script language="JavaScript" src="http://www.geoplugin.net/javascript.gp" type="text/JavaScript"></script>
+		<script src="https://apis.google.com/js/platform.js" async defer></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB10G4tIPdXMCacVCzVM9J9Nko9ity9Ho0" async defer></script>
+		<link rel="shortcut icon" href="https://guestcenter.opentable.com/Content/img/icons/favicon.ico?v=gc-microapp-login-101" />
+		<script>
+			var profile_name;
+			
+			function closePopupMessage() {
+				document.getElementById("popup_alert").style.display = "none";
+			}
+			function closeSidebar() {
+				//close the sidebar
+				document.getElementById("sidebar").style.display = "none";
+				document.getElementById("sidebar_menu").style.display = "none";
+				document.getElementById("main_view_pane").style.opacity = "1";
+			}
+			function createRequest(method, url) {
+				var xhr = new XMLHttpRequest();
+				if ("withCredentials" in xhr) {
+					xhr.open(method, url, true);
+				} else if (typeof XDomainRequest != "undefined") {
+					xhr = new XDomainRequest();
+					xhr.open(method, url);
+				} else {
+					xhr = null;
+				}
+				return xhr;
+			}
+			function getJSONByIP() {
+				var ip = document.getElementById("ip_input").value;	
+				var url = 'http://www.geoplugin.net/json.gp?ip=' + ip;
+				var xhr = createRequest('GET', url);
+				xhr.send();
+					
+				if (geoplugin_status() == 200) {
+					var obj = this.responseData;
+					var lat,lng;
+					// Response handlers.
+					xhr.onload = function() {
+						//get lat,lng from JSON
+						var text = xhr.responseText;
+						var json = JSON.parse(text);
+						lat = Number(json.geoplugin_latitude);
+						lng = Number(json.geoplugin_longitude);
+						
+						//then center map on those coordinates
+						map = new google.maps.Map(document.getElementById('tracker_map'), {
+						  center: {lat, lng},
+						  zoom: 14,
+						  mapTypeId: 'hybrid'
+						});
+						
+						//then add marker to map
+						var marker = new google.maps.Marker({
+						  position: {lat, lng},
+						  map: map
+						});
+
+						// show map, hide results iFrame
+						if(document.getElementById('tracker_map').style.display = 'none') {
+							document.getElementById('form_results_iframe2').style.display = 'none';
+							document.getElementById('tracker_map').style.display = 'block';
+						}
+					};
+				}
+			}
+			function hideMap() {
+				//hide the map if it is visible
+				if(document.getElementById('tracker_map').style.display = 'block') {
+					document.getElementById('tracker_map').style.display = 'none';
+					document.getElementById('form_results_iframe2').style.display = 'block';
+				}
+			}
+			/*function onSignIn(googleUser) {
+				var profile = googleUser.getBasicProfile();
+				profile_name = profile.getName();
+				
+				document.getElementById("username_display").innerHTML = profile_name;
+				document.getElementById("main_view_pane").style.display = "flex";
+				document.getElementById("sign_in_button").style.display = "none";
+				document.getElementById("sidebar_menu").style.display = "block";
+				document.getElementById("username_container").style.display = "block";
+			}*/
+			 function openSidebar() {
+				//open the sidebar
+				//if(profile_name !== undefined) {
+					document.getElementById("sidebar").style.display = "block";
+					document.getElementById("sidebar_menu").style.display = "block";
+					document.getElementById("main_view_pane").style.opacity = "0.5";
+				//} else {
+					//showAlertBox("Please Sign In First");
+				//}
+			}
+			function reloadPage() {
+				document.location.reload();
+			}
+			function renderButton() {
+				gapi.signin2.render('gSignIn', {
+					'scope': 'profile email',
+					'width': 240,
+					'height': 50,
+					'longtitle': true,
+					'theme': 'dark',
+					'onsuccess': onSuccess,
+					'onfailure': onFailure
+				});
+			}
+			function showAlertBox(alert) {
+				document.getElementById('popup_message').innerHTML = alert;
+				document.getElementById('popup_alert').style.display = "block";
+			}
+			function showCredits() {
+				document.getElementById("credits").style.display = "block";
+			}
+			//on click toggle visibility for report forms
+			function showForm(id) {
+				document.getElementById(id).classList.toggle("report_form");
+			}
+			function showUserMenu() {
+				var menu = document.getElementById("user_menu");
+				if (menu.style.display === "block") {
+					menu.style.display = "none";
+				} else {
+					menu.style.display = "block";
+				}
+			}
+			/*function signOut() {
+				var auth2 = gapi.auth2.getAuthInstance();
+				auth2.signOut().then(function () {
+					console.log('User signed out.');
+					document.getElementById("main_view_pane").style.display = "none";
+					reloadPage();
+				});
+			 }*/
+			/*
+			
+			--------------------------- in progress ---------------------------
+			
+			//parse data
+			function getIpadVersions(rid) {
+				//var url = 'http://www.geoplugin.net/json.gp?ip=' + ip;
+				var url = 'http://phisto-prod-sc.otenv.com/ipad?rid=' + rid
+				var xhr = createRequest('GET', url);
+				xhr.send();
+					
+				if (geoplugin_status() == 200) {
+				
+					//have to get json object, then get array from object, or is it the other way around?
+					//output copy in drive
+					//will have to run a for loop on the feature toggle one, get the option and the value
+				
+				
+					var obj = this.responseData;
+					var lat,lng;
+					// Response handlers.
+					xhr.onload = function() {
+						//get lat,lng from JSON
+						var text = xhr.responseText;
+						var json = JSON.parse(text);
+						client_id = Number(json.clientId);
+						ios_version = Number(json.iOSVersion);
+						last_seen = Number(json.lastSeen);
+
+						
+					};
+				}
+			}
+			
+			--------------------------- in progress ---------------------------
+			
+			*/
+		</script>
+		<style>	
+		/*
+		colors: 
+		select blue #4F98DB
+		 - hover #4f82db
+		select green #5fc782
+		background grey #464950
+		foreground grey 53575E
+		header grey 3A3D42
+		GC menu select blue: #6CB6F5
+		sidebar-banner grey: #A6A6A6
+		signout button text color: 4F98DB
+		 - hover 23496d
+		OT red: da3743
+		*/
+		
+		* {
+			border-radius: 3px;
+			cursor:default;
+			font-family: source-sans-pro,sans-serif;
+		}
+		a {
+			color: #4F98DB;
+			cursor:pointer;
+		}
+		.app-logo {
+			justify-content: flex-end;
+			flex: 1;
+		}
+		.app-logo img {
+			width:100px;
+			position: absolute;
+			right: 47%;
+		}
+		body {
+			margin:0px;
+		}
+		.button-rightcolumn {
+			float:right;
+		}
+		.close_button {
+			position: absolute;
+			margin-top: 10px;
+			margin-left: 7px;
+		}
+		.col-25 {
+			float: left;
+			width: 35%;
+			margin-top: 6px;
+		}
+		.col-50 {
+			width: 45%;
+			margin-top: 6px;
+		}
+		.col-75 {
+			float: left;
+			width: 65%;
+			margin-top: 6px;
+		}
+		.container {
+			border-radius: 5px;
+			background-color: #f2f2f2;
+			padding: 20px;
+		}
+		#doc-text {
+			float:left;
+			margin-left:20px;
+		}
+		.dropbtn {
+			background-color: #4F98DB;
+			color: white;
+			padding: 16px;
+			font-size: 16px;
+			border: none;
+			cursor: pointer;
+			width: 100%;
+		}
+		.dropdown {
+			position: relative;
+			display: inline-block;
+			margin-bottom: 10px;
+		}
+		.dropdown-content {
+			display: none;
+			position: absolute;
+			background-color: #f9f9f9;
+			min-width: 160px;
+			box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+			z-index: 1;
+			width:95%;
+		}
+		.dropdown-content a {
+			color: black;
+			padding: 12px 16px;
+			text-decoration: none;
+			display: block;
+		}
+		.dropdown-content a:hover {
+			background-color: #f1f1f1;
+			cursor:pointer;
+		}
+		.dropdown:hover .dropdown-content {
+			display: block;
+		}
+		.dropdown:hover .dropbtn {
+			background-color: #4f82db;
+		}
+		.footer {
+		    position: fixed;
+		    left: 0;
+		    bottom: 0;
+		    width: 100%;
+		    color: white;
+		    border-radius:0px;
+			margin-bottom:5px;
+		}
+		form {
+			background-color:#53575E;
+			padding-bottom:3px;
+			border-bottom-width: 2px;
+			border-bottom-color: #FFF;
+			border-bottom-style: solid;
+		}
+		.form-label {
+			padding-bottom:5px;
+			padding-top:5px;
+			text-align:center;
+			text-decoration:underline;
+		}
+		.form-panel {
+		    display: flex;
+		    flex-direction: column;
+			overflow:auto;
+			width: 27%;
+			overflow-x: hidden;
+			padding: 5px;
+			padding-right: 10px;
+			padding-left: 10px;
+			margin-right: 5px;
+			background-color: #53575E;
+        }
+		#form-panel2 {
+			display:none;
+		}
+		#form-panel2 .dropdown-content {
+			right:0;
+		}
+		#form_results_iframe2 {
+			display:none;
+			margin-right: 5px;
+		}
+		.help {
+			max-width: 20px;
+			padding-top: 13px;
+		}
+		html {
+		    background-color: #1C1D1F;
+		    color: #FFF;
+		}
+		h1 {
+		    color: #FFF;
+			margin-left:10px;
+			font-size:40px;
+			margin: 5px;
+		}
+		h2 {
+			margin:5px;
+			margin-left:10px;
+			font-size:20px;
+		}
+		header {
+		    flex:1;
+            color: #FFF;
+            background-color: #3A3D42;
+            border-bottom: 1px solid #;
+			margin:0px;
+		}
+		.header-flex {
+			display:flex;
+		}
+		header .left {
+		    display: flex;
+		    justify-content: flex-start;
+		    flex-flow: row nowrap;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            
+		}
+		header .center {
+		    display: flex;
+		    justify-content: center;
+		    flex-flow: row nowrap;
+            flex-direction: row;
+            flex-wrap: nowrap;
+		}
+		header .right {
+		    display: flex;
+		    justify-content: flex-end;
+		    flex-flow: row nowrap;
+            flex-direction: row;
+            flex-wrap: nowrap;
+		}
+		.hidden {
+			display:none;
+		}
+		hr {
+		    width:100%;
+		}
+		.input-date {
+			width:99%;
+			padding: 5px;
+		}
+		.input-number {
+			width:90%
+		}
+		input[type=submit] {
+			background-color: #5fc782;
+			color: white;
+			padding: 12px 20px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			margin: 2px;
+		}
+		input[type=submit]:hover {
+			background-color: #45a049;
+		}
+		input[type=text], input[type=number], select, textarea {
+			padding: 5px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			resize: vertical;
+			cursor:text;
+			width:100%;
+		}
+		label {
+			padding: 12px 12px 12px 0;
+			display: inline-block;
+		}
+		#main_view_pane {
+			
+		}
+		.map {
+		    display: none;
+            flex-direction: column;
+            justify-content: flex-end;
+			flex: 1;
+			background-color: #EEE;
+			overflow:auto;
+			margin-right: 5px;
+			width:600;
+			height:100%;
+			frameborder:0;
+		}
+		.menu_text {
+			display:none;
+		}
+		.menu_text .sidebar_menu_option {
+			font-size:20px;
+			text-indent: 20px;
+		}
+		#phisto_sidebar_button {
+			width:30px;
+			height:30px;
+			margin-top: 10px;
+			margin-left: 10px;
+		}
+		#phisto_close_menu_button {
+			width:30px;
+			height:30px;
+			margin-top: 10px;
+			margin-left: 10px;
+		}
+		#popup_alert {
+			position:absolute;
+			right:43%;
+			top:30%;
+			width:250px;
+			padding:20px;
+			background-color:#da3743;
+			display:none;
+			z-index:1;
+			text-align:center;
+		}
+		#popup_message_close {
+			width:20px;
+			position:absolute;
+			top:5px;
+			right: 5px;
+		}
+		.report_form {
+			display:none;
+			text-align:center;
+		}
+		.row {
+			margin-top:5px;
+		}
+		.row:after {
+			content: "";
+			display: table;
+			clear: both;
+		}
+		.results {
+		    display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+			flex: 1;
+			background-color: #EEE;
+			overflow:auto;
+			margin-right: 15px;
+		}
+		.right-side {
+			display:none;
+		}
+		select {
+			width:100%;
+		}
+		.show{
+			display: block;
+		}
+		.sidebar {
+			display:none;
+			left: 0;
+			top: 0;
+			position: fixed;
+			z-index: 1;
+			background-color: #fff;
+			transition: 1.0s;
+			height: 97%;
+			width:303px;
+			background-color:#4B4D51;
+		}
+		.sidebar a {
+			padding: 8px 8px 8px 32px;
+			text-decoration: none;
+			font-size: 24px;
+			color: #818181;
+			display: block;
+			transition: 0.3s;
+			border-bottom: 1px solid #D6D9DE;
+		}
+		.sidebar a:hover {
+			color: #f1f1f1;
+			background-color: #6CB6F5;
+		}
+		.sidebar .app-name {
+			margin-left: 28px;
+			float:right;
+			color: #000;
+		}
+		.sidebar_banner {
+			height:24%;
+		}
+		#sidebar_menu {
+			background-color:white;
+			height:76%;
+			display:none;
+		}
+		.sidebar_menu .app-name{
+			float:right;
+		}
+		.sidebar_menu_button {
+		    margin-top: 15px;
+			margin-left: 7px;
+		}
+		.sidebar_title {
+			margin-bottom:20px;
+		}
+		#sign_in_button {
+			float:right;
+			padding: 10px;
+		}
+		#sign_out_button button:hover{
+			background-color:grey;
+			color:#23496d;
+		}
+		.submit-button {
+			float:right;
+		}
+		.submit-button-rightcolumn {
+			float:left;
+		}
+		#username_container {
+			display:none;
+		}
+		#username_display {
+			color:white;
+			padding:5px;
+			float:right;
+			background-color:#26282D;
+			margin:10px;
+			padding:10px;
+			width:175px;
+		}
+		#username_dropdown_button {
+			width:20px;
+			position:absolute;
+			right:20;
+			top:24;
+		}
+		#user_menu {
+			display:none;
+			background-color:black;
+			padding:15px;
+			position:absolute;
+			right:10px;
+			top:48px;
+			z-index:1;
+			width:150px;
+			text-align:center;
+		}
+		.view-pane {
+			display: flex;
+			overflow:auto;
+			margin:10px;
+			bottom: 0;
+			left: 0;
+			position: absolute;
+			width: 99%;
+			top: 0;
+			margin-top: 65px;
+			margin-bottom: 10px;
+			margin-left: 10px;
+			margin-right: 10px;
+		}
+		#version-text {
+			text-align: center;
+			margin-right:20px;
+			width:100%;
+			position:absolute;
+			bottom:5;
+			color: #000;
+		}
+		::-webkit-scrollbar {
+			width: 5px;
+			direction:rtl;
+		}
+		::-webkit-scrollbar-track {
+			background: #464950;; 
+		}
+		::-webkit-scrollbar-thumb {
+			background: #FFF; 
+		}
+		::-webkit-scrollbar-thumb:hover {
+			background: #888; 
+		}
+		/* For Firefox */
+		input[type='number'] {
+			-moz-appearance:textfield;
+		}
+
+		/* Webkit browsers like Safari and Chrome */
+		input[type=number]::-webkit-inner-spin-button,
+		input[type=number]::-webkit-outer-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+		
+		@media screen and (max-width: 600px) {
+			.col-25, .col-75 {
+				width: 100%;
+				margin-top: 0;
+			}
+			.dropdown-content {
+				min-width: 160px;
+			}
+			select {
+				width:98%;
+			}
+			.submit-button {
+				width: 60%;
+			}
+			#version-text {
+				display: none;
+			}
+			#doc-text {
+				width:100%;
+				text-align:center;
+			}
+		}
+		@media screen and (max-width: 800px) {
+			#form_results_iframe2 {
+				display:none;
+			}
+		}
+		@media screen and (min-width: 1200px) {
+			.form-panel {
+				width: 15%;
+			}
+			#form-panel2 {
+				display:flex;
+			}
+			#form_results_iframe2 {
+				display:flex;
+			}
+		}
+		</style>
+	</head>
+	<body>
+	    <header>
+	        <div class="header-flex">
+				<div class="sidebar" id="sidebar">
+					<div class="sidebar_banner">
+						<div class="sidebar_title">
+							<svg id="phisto_close_menu_button" viewBox="0 0 13 13" data-qa="close" onclick="closeSidebar()">
+								<polyline class="gui-close" fill="none" stroke="currentColor" points="1 1,6.5 6.5,12 1"></polyline>
+								<polyline class="gui-close" fill="none" stroke="currentColor" points="1 12,6.5 6.5,12 12"></polyline>
+							</svg>
+							<div class="app-name">
+								<h1>Phisto</h1>
+							</div>
+						</div>
+					</div>
+					<div id="sidebar_menu">
+						<a class="sidebar_menu_option" onclick="closeSidebar()">Reports</a>		
+						<a href="/home" class="sidebar_menu_option" target="form_results_iframe">Documentation</a>
+						<a href="https://docs.google.com/forms/d/e/1FAIpQLSfmeWoG-cU_k_A6FEYQ0byCkr400Y7uvvCVSn1ZJ9gVdCTPYQ/viewform" target="form_results_iframe" class="sidebar_menu_option">Help & Feedback</a>
+					</div>
+					<div  id="version-text">
+						v5.0.1b
+					</div>
+				</div>
+				<div class="sidebar_menu" onclick="openSidebar()">
+					<svg id="phisto_sidebar_button" viewBox="0 0 26 21">
+					  <line stroke="currentColor" x1="1" x2="24" y1="2" y2="2" stroke-width="2" stroke-linecap="round"></line>
+					  <line stroke="currentColor" x1="1" x2="24" y1="11" y2="11" stroke-width="2" stroke-linecap="round"></line>
+					  <line stroke="currentColor" x1="1" x2="24" y1="20" y2="20" stroke-width="2" stroke-linecap="round"></line>
+					</svg>
+					<div class="app-name">
+						<h1>Phisto</h1>
+					</div>
+				</div>
+				<div class="app-logo">
+					<img src="http://zerorestaurantcharleston.com/wp-content/uploads/sites/3/2016/04/OpenTableLogoWhite-e1473958158307.png" alt="OT_logo" class="logo">
+				</div>
+				<!--
+				<div id="sign_in_button">
+					<div class="g-signin2" data-onsuccess="onSignIn"></div>
+				</div>
+				<div id="username_container" onclick="showUserMenu()">
+					<div id="username_display">
+					</div>
+					<svg id="username_dropdown_button" viewBox="0 0 13 7">
+						<polyline fill="none" stroke="#fff" points="1,1 6.5,6 12,1"></polyline>
+					</svg>
+				</div>
+				<div id="user_menu">
+					<div onclick="signOut()">Sign Out</div>
+				</div>
+				-->
+	        </div>
+	    </header>
+		
+		<!--base url for all OTcalls-->
+		<base href="http://phisto-prod-sc.otenv.com" />
+		<div id="popup_alert">
+			<div id="popup_message"></div>
+			<svg id="popup_message_close" viewBox="0 0 13 13" data-qa="close" onclick="closePopupMessage()">
+				<polyline class="gui-close" fill="none" stroke="currentColor" points="1 1,6.5 6.5,12 1"></polyline>
+				<polyline class="gui-close" fill="none" stroke="currentColor" points="1 12,6.5 6.5,12 12"></polyline>
+			</svg>
+		</div>
+
+		<div class="view-pane" id="main_view_pane">
+			<div class="form-panel">
+				<div class="dropdown">
+				  <button class="dropbtn">Add a Report</button>
+				  <div class="dropdown-content">
+					<a onclick=showForm("resochanges_report_log")>Reservation Changes</a>
+					<a onclick=showForm("resochanges_debug_report_log")>Reservation Changes (Debug)</a>
+					<a onclick=showForm("publog_report_log")>Publish Log</a>
+					<a onclick=showForm("guest_report_log")>Guest Log</a>
+					<a onclick=showForm("resoreport_log")>Reservation Report</a>
+					<a onclick=showForm("guest_export_report_log")>Guest Export</a>
+					<a onclick=showForm("publish_history_report_log")>Publish History</a>
+					<a onclick=showForm("resolist_report_log")>Reservation List</a>
+					<a onclick=showForm("sms_report_form")>SMS Logs</a>
+					<a onclick=showForm("mixexport_report_form")>MixPanel Export</a>
+					<a onclick=showForm("ipad_report_form")>iPad Versions</a>
+					<a onclick=showForm("feature_report_log")>Feature Toggles</a>
+					<a onclick=showForm("restaurant_details_report_log")>Restaurant Details</a>
+					<a onclick=showForm("restaurant_policy_report_log")>Restaurant Policy</a>
+					<a onclick=showForm("consumer_policy_report_log")>Consumer-Facing Policy</a>
+					<a onclick=showForm("not_operational")>Not Operational</a>
+				  </div>
+				</div>
+				<form action="/resochanges" class="report_form" id="resochanges_report_log" target="form_results_iframe">
+					<div class="form-label">
+						Reservation Changes
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							ResID:
+						</div>
+						<div class="col-75">
+							<input type="text" name="resid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('Shows a full changelog for a given GC reservation. Resid is best found by running reservation list first. It will be a mix of letters and numbers.')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form>
+				<form action="/resochanges_debug" class="report_form" id="resochanges_debug_report_log" target="form_results_iframe">
+					<div class="form-label" >
+						Reservation Changes (Debug)
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value=""class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							ResID:
+						</div>
+						<div class="col-75">
+							<input type="text" name="resid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox(
+						'Shows a list of publishes between the given dates, and the changes made in them. Resid is best found by running reservation list first. It will be a mix of letters and numbers.')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form>
+				<form action="/publog" class="report_form" id="publog_report_log" target="form_results_iframe">
+					<div class="form-label">
+						Publish Log
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value=""class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Start Date:
+						</div>
+						<div class="col-75">
+							<input type="date" name="startdate" class="input-date" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							End Date:
+						</div>
+						<div class="col-75">
+							<input type="date" name="enddate" class="input-date" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="alert('Shows a list of publishes between the given dates, and the changes made in them.  CURRENTLY this only will tell you if the overall shift applied to a default weekday schedule OR special day is removed or replaced by another. Changes to shifts themselves or floor layouts are not shown; coming soon.')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form>
+				<form action="/guestlog" class="report_form" id="guest_report_log" target="form_results_iframe">
+					<div class="form-label">
+						Guest Log
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Guest ID:
+						</div>
+						<div class="col-75">
+							<input type="text" name="guestid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox(
+						'Gives a very basic log of changes made to a given GuestID. GuestID is best found by running reservation list first. It will be a mix of letters and numbers.')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form>
+				<form action="/resoreport" class="report_form" id="resoreport_log" target="form_results_iframe">
+					<div class="form-label">
+						Reservation Report
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Start Date:
+						</div>
+						<div class="col-75">
+							<input type="date" name="startdate" class="input-date" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							End Date:
+						</div>
+						<div class="col-75">
+							<input type="date" name="enddate" class="input-date" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('Gives a very basic CSV reservation report for GC/OTC sites (draws from venue) within the given dates for the given RID.  Useful for sites mid-term, post term, or otherwise in a state that makes it difficult to pull this from conventional UI means.')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form>
+				<form action="/guestexport" class="report_form" id="guest_export_report_log" target="form_results_iframe">
+					<div class="form-label">
+						Guest Export
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Tags?
+						</div>
+						<div class="col-75">
+							<select name="includetags" required>
+							  <option value="true">True</option>
+							  <option value="false">False</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('Exports a CSV-formatted guest dump from given GC RID.')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form>
+				<form action="/phisto" class="report_form" id="publish_history_report_log" target="form_results_iframe">
+					<div class="form-label">
+						Publish History
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('Shows a list of publishes for a RID with the URLs to view their data directly, the publish timestamps, and **NEW** the logins of the users for the last three months worth of publishes, taken from Mixpanel (you can look farther back with the optional startdate parameter)')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form> 
+				<form action="/resolist" class="report_form" id="resolist_report_log" target="form_results_iframe">
+					<div class="form-label">
+						Reservation List
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Date:
+						</div>
+						<div class="col-75">
+							<input type="date" name="date" class="input-date" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('Lists reservations for the given RID for the given date. GuestCenter Only')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form>
+				<form action="/smslog" class="report_form" id="sms_report_form" target="form_results_iframe">
+					<div class="form-label">
+						SMS Logs (no dashes)
+					</div>
+					<div class="row">
+						<div class="col-25">
+							To:
+						</div>
+						<div class="col-75">
+							<input type="number" name="to_number" value="" class="input-number">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							From:
+						</div>
+						<div class="col-75">
+							<input type="number" name="from_number" value="" class="input-number">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Product:
+						</div>
+						<div class="col-75">
+							<select name="product" required>
+								<option value="ERB-NA">ERB-NA</option>
+							    <option value="ERB-EU">ERB-EU</option>
+							    <option value="GC">GuestCenter</option>
+								<option value="chat">Chat</option>
+								<option value="chatv2">Chat V2</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('Shows last 50 text messages matching given TO and/or FROM numbers, with any potential errors thrown by any of the texts.')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form>
+				<form action="/mixexport" class="report_form" id="mixexport_report_form" target="form_results_iframe">
+					<div class="form-label">
+						MixPanel(Beta)
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Event:
+						</div>
+						<div class="col-75">
+							<select name="product">
+								<option value="">Activate / Disable Promoted Inventory</option>
+							    <option value="">Address - Change</option>
+							    <option value="">Address - Initial Change</option>
+								<option value="">Adjust Availability Button</option>
+								<option value="">Adjust Availabilty Save</option>
+								<option value="">Adjust Remaining Availability</option>
+							    <option value="">Adjust Shift End Time</option>
+							    <option value="">Adjust Shift Move</option>
+								<option value="">Adjust Shift Start Time</option>
+								<option value="">Alerts - Initial Change</option>
+								<option value="">Analytics View Month Picker Tapped</option>
+							    <option value="">App Activated</option>
+							    <option value="">App Session</option>
+								<option value="">Auto Print Changed</option>
+								<option value="">Block Reservations</option>
+								<option value="">Block Reservations Clicked</option>
+							    <option value="">Block Table</option>
+							    <option value="">BOH: Change Availability</option>
+								<option value="">BOH: Change Availability Exception</option>
+								<option value="">BOH: Change Number of Subshift</option>
+								<option value="">BOH: Change Subshift Boundary</option>
+							    <option value="">Campaign - Create Blocks</option>
+							    <option value="">Campaign - Details Viewed</option>
+								<option value="">Campaign - List Viewed</option>
+								<option value="">Campaign - Pause or Resume Campaign</option>
+								<option value="">Campaign - Remove Blocks</option>
+								<option value="">Campaign - Stop Campaign</option>
+								<option value="">Change Combo</option>
+								<option value="">Change Event Duration Threshold Reached</option>
+								<option value="">Change Event Queue Threshold Reached</option>
+								<option value="">Change Floor Plan</option>
+								<option value="">Change Password</option>
+								<option value="">Change Password Request</option>
+								<option value="">Change Reverted</option>
+								<option value="">Chit Manually Printed</option>
+								<option value="">Chit Printer Selected</option>
+								<option value="">Close Day Override</option>
+								<option value="">Combo/Category Conflict Warning</option>
+								<option value="">Create Tag - Save</option>
+								<option value="">Credit Card Added</option>
+								<option value="">Credit Card Charge Submitted</option>
+								<option value="">Credit Card Entered in Notes</option>
+								<option value="">Credit Card Removed from Notes</option>
+								<option value="">Culture - Change</option>
+								<option value="">Culture - Initial Change</option>
+								<option value="">Custom action</option>
+								<option value="">Date/Shift Selected</option>
+								<option value="">Default Chit Copies Changed</option>
+								<option value="">Deprecation Warning Modal</option>
+								<option value="">Diner Reviews Overall Rating View Selected</option>
+								<option value="">Disable Floorplan for Shift</option>
+								<option value="">Edit Tag - Save</option>
+								<option value="">Enable Floorplan for Shift</option>
+								<option value="">Expanded Reservation Summary</option>
+								<option value="">Export Button</option>
+								<option value="">Filter Diner Reviews</option>
+								<option value="">First Change After Publish</option>
+								<option value="">Fishbowl</option>
+								<option value="">Floor Plan Loaded</option>
+								<option value="">Floor Plan Panned</option>
+								<option value="">Floor Plan Zoomed</option>
+								<option value="">FloorPlan Rotation</option>
+								<option value="">FOH Main View Selected</option>
+								<option value="">GC Booking Notifications Updated</option>
+								<option value="">GCR: Dashboard card click</option>
+								<option value="">GCR: Exited app</option>
+								<option value="">GCR: Feedback - Abandoned page</option>
+								<option value="">GCR: Feedback - Submitted successfully</option>
+								<option value="">GCR: Guest Information download failed</option>
+								<option value="">GCR: Guest Information is downloaded</option>
+								<option value="">GCR: Load page</option>
+								<option value="">GCR: Main nav click</option>
+								<option value="">GCR: Reservations exported</option>
+								<option value="">GCR: Reservations printed</option>
+								<option value="">GCR: Select Custom DateRange</option>
+								<option value="">GCR: Select Predefined DateRange</option>
+								<option value="">Go To Reservation</option>
+								<option value="">GS Approval: Confirm Modal Displayed</option>
+								<option value="">GS Approval: Confirm Modal Join Clicked</option>
+								<option value="">GS Approval: Save Success</option>
+								<option value="">Guest Messaging</option>
+								<option value="">Guest Search</option>
+								<option value="">Guest Update</option>
+								<option value="">History Tab Viewed</option>
+								<option value="">Interacted with Graph</option>
+								<option value="">Interacted With Graph</option>
+								<option value="">Keyboard Used</option>
+								<option value="">Learn More</option>
+								<option value="">Load page</option>
+								<option value="">Load Shift Details</option>
+								<option value="">Main Menu View Selected</option>
+								<option value="">Message Opened</option>
+								<option value="">Message Sent</option>
+								<option value="">Min Large Party Set</option>
+								<option value="">Monthly Views Section Swiped</option>
+								<option value="">New Reservation Created</option>
+								<option value="">New Reservation Removed</option>
+								<option value="">New Reservation Started</option>
+								<option value="">New Reservation Tab Open</option>
+								<option value="">New WalkIn/WaitList Removed</option>
+								<option value="">New WalkIn/Waitlist Tab Open</option>
+								<option value="">Notes Button Tapped</option>
+								<option value="">Notification Received</option>
+								<option value="">Notification Settings Changed</option>
+								<option value="">Notification Tab Selected</option>
+								<option value="">Notification Tapped</option>
+								<option value="">Online Status</option>
+								<option value="">Online Waitlist Block</option>
+								<option value="">Online Waitlist Disabled</option>
+								<option value="">Online Waitlist Enabled</option>
+								<option value="">Open Day Override</option>
+								<option value="">Passcode Created</option>
+								<option value="">Passcode Disabled</option>
+								<option value="">Passcode Enabled Email Sent</option>
+								<option value="">Passcode Feature Settings Updated</option>
+								<option value="">Passcode Reset Email Sent</option>
+								<option value="">Passcode Triggered</option>
+								<option value="">Pause Sync</option>
+								<option value="">Payments</option>
+								<option value="">Phone Number Called</option>
+								<option value="">Phone Number Change</option>
+								<option value="">Print Button</option>
+								<option value="">Problem Reservations Tab Selected</option>
+								<option value="">Publish</option>
+								<option value="">PublishOverTime</option>
+								<option value="">PublishPostError</option>
+								<option value="">Push Notification First Run Experience Introduction</option>
+								<option value="">Push Notification Rated</option>
+								<option value="">Push Notification Received</option>
+								<option value="">Push Notification Setting Changed</option>
+								<option value="">Push Notification Tapped</option>
+								<option value="">Quick Action Swipe</option>
+								<option value="">Referrer Created</option>
+								<option value="">Referrer Detail Viewed</option>
+								<option value="">Referrer Updated</option>
+								<option value="">Remove Day Override</option>
+								<option value="">Remove Shift</option>
+								<option value="">Reservation Created</option>
+								<option value="">Reservation Detail</option>
+								<option value="">Reservation Detail Tab Viewed</option>
+								<option value="">Reservation List</option>
+								<option value="">Reservation List Height Changed</option>
+								<option value="">Reservation List Nav Button Tapped</option>
+								<option value="">Reservation Refresh</option>
+								<option value="">Reservation Reverted</option>
+								<option value="">Reservation Search</option>
+								<option value="">Reservation Started</option>
+								<option value="">Reservation Status</option>
+								<option value="">Reservation Tags Update</option>
+								<option value="">Reservation Update</option>
+								<option value="">reservationDetailView</option>
+								<option value="">reservationListView</option>
+								<option value="">Reservations Blocked for Day</option>
+								<option value="">Reservations Resumed for Day</option>
+								<option value="">reservationsSearch</option>
+								<option value="">Resume Reservations Clicked</option>
+								<option value="">Resync Data</option>
+								<option value="">Seating Flow Completed</option>
+								<option value="">Select Combo</option>
+								<option value="">Select Day Override</option>
+								<option value="">Select floorplan</option>
+								<option value="">Select Shift</option>
+								<option value="">Server List Tab Selected</option>
+								<option value="">Server Section Added</option>
+								<option value="">Server Section Deleted</option>
+								<option value="">Server Section Pref Changed</option>
+								<option value="">Server Section Updated</option>
+								<option value="">Shift Insights Section Tapped</option>
+								<option value="">Shift Note Added</option>
+								<option value="">Shift Note Edited</option>
+								<option value="">Shift Note Link Tapped</option>
+								<option value="">Shift Note Removed</option>
+								<option value="">Shift Notes Scrolled to Bottom</option>
+								<option value="">Shift Overview Tab Viewed</option>
+								<option value="">Soft Assignments Pref Change</option>
+								<option value="">Sort Order Changed</option>
+								<option value="">Suggested Wait Selected</option>
+								<option value="">Sync Engine State Changed</option>
+								<option value="">Sync on-demand</option>
+								<option value="">Table Block Added</option>
+								<option value="">Table category set</option>
+								<option value="">Table Distributed</option>
+								<option value="">Table Ready Message Sent</option>
+								<option value="">Ticket Status Tapped</option>
+								<option value="">Ticketed Experience</option>
+								<option value="">Ticketed Experience Modified</option>
+								<option value="">Ticketed Shift Note Viewed</option>
+								<option value="">Ticketed Shift Notes Viewed</option>
+								<option value="">Timezone - Change</option>
+								<option value="">Timezone - Initial Change</option>
+								<option value="">Timezone API - Address Not Found</option>
+								<option value="">Toast View Autodisplayed</option>
+								<option value="">Toast View Tapped</option>
+								<option value="">User Sign In</option>
+								<option value="">User Sign Out</option>
+								<option value="">User Tracking Change</option>
+								<option value="">User Tracking Name Change</option>
+								<option value="">User Tracking Name Selected</option>
+								<option value="">View Terms - Promoted Inventory</option>
+								<option value="">Waitlist Created</option>
+								<option value="">Waitlist Messaging</option>
+								<option value="">Waitlist Sort Order Changed</option>
+								<option value="">WalkIn Created</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Start Date:
+						</div>
+						<div class="col-75">
+							<input type="date" name="startDate" class="input-date">
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							End Date:
+						</div>
+						<div class="col-75">
+							<input type="date" name="endDate" class="input-date">
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('soon to come')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form>
+
+				<!---->
+
+				<form action="/ipad" class="report_form" id="ipad_report_form" target="form_results_iframe">
+					<div class="form-label">
+						iPad Versions
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('Shows a list of iPads seen connecting to the given RID, the version of GC that each is running, and the last time that iPad was seen with that version.')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form> 
+				<form action="http://phisto-prod-sc.otenv.com/feature" class="report_form" id="feature_report_log" target="form_results_iframe">
+					<div class="form-label">
+						Feature Toggles
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('Shows every feature toggle and whether the given RID is running it.')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form>
+				<form action="/restaurant" class="report_form" id="restaurant_details_report_log" target="form_results_iframe">
+					<div class="form-label">
+						Restaurant Details
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('Shows restaurant details that are stored in Venue.')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form>
+				<form action="/restpolicy" class="report_form" id="restaurant_policy_report_log" target="form_results_iframe">
+					<div class="form-label">
+						Restaurant Policy
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('Shows a list of policies for the given restaurant.')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form>
+				<form action="/consumerpolicy" class="report_form" id="consumer_policy_report_log" target="form_results_iframe">
+					<div class="form-label">
+						Consumer-Facing Policy
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('Shows a list of consumer-oriented policies for the given restaurant.')">
+						<input type="submit" value="Submit" class="submit-button">
+					</div>
+				</form>				
+				<form action="/notop"  class="report_form" id="not_operational" target="form_results_iframe">
+					<div class="form-label">
+						Not Operational
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="text" id="ip_input" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('soon to come')">
+						<input type="submit" id="ip_tracker_submit" value="Submit" class="submit-button">
+					</div>
+				</form>
+			</div>
+			<iframe class="results" name="form_results_iframe">
+			</iframe>
+			
+								<!--right-side-->
+
+			<div id="tracker_map" class="map"></div>
+			
+			<iframe class="results" name="form_results_iframe2" id="form_results_iframe2">
+			</iframe>
+
+			<div class="form-panel" id="form-panel2">
+				<div class="dropdown">
+				  <button class="dropbtn">Add a Report</button>
+				  <div class="dropdown-content">
+					<a onclick=showForm("resochanges_report_log2")>Reservation Changes</a>
+					<a onclick=showForm("resochanges_debug_report_log2")>Reservation Changes (Debug)</a>
+					<a onclick=showForm("publog_report_log2")>Publish Log</a>
+					<a onclick=showForm("guest_report_log2")>Guest Log</a>
+					<a onclick=showForm("resoreport_log2")>Reservation Report</a>
+					<a onclick=showForm("guest_export_report_log2")>Guest Export</a>
+					<a onclick=showForm("publish_history_report_log2")>Publish History</a>
+					<a onclick=showForm("resolist_report_log2")>Reservation List</a>
+					<a onclick=showForm("sms_report_form2")>SMS Logs</a>
+					<!--<a onclick=showForm("mixpanel_export2")>MixPanel Export</a>-->
+					<a onclick=showForm("ipad_report_form2")>iPad Versions</a>
+					<a onclick=showForm("feature_report_log2")>Feature Toggles</a>
+					<a onclick=showForm("restaurant_details_report_log2")>Restaurant Details</a>
+					<a onclick=showForm("restaurant_policy_report_log2")>Restaurant Policy</a>
+					<a onclick=showForm("consumer_policy_report_log2")>Consumer-Facing Policy</a>
+					<a onclick=showForm("not_operational2")>Not Operational</a>
+					<a onclick=showForm("ip_tracker2")>IP Tracker(BETA)</a>
+				  </div>
+				</div>
+				<form action="/resochanges" class="report_form" id="resochanges_report_log2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label">
+						Reservation Changes
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							ResID:
+						</div>
+						<div class="col-75">
+							<input type="text" name="resid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('Shows a full changelog for a given GC reservation. Resid is best found by running reservation list first. It will be a mix of letters and numbers.')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form>
+				<form action="/resochanges_debug" class="report_form" id="resochanges_debug_report_log2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label" >
+						Reservation Changes (Debug)
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value=""class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							ResID:
+						</div>
+						<div class="col-75">
+							<input type="text" name="resid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox(
+						'Shows a list of publishes between the given dates, and the changes made in them. Resid is best found by running reservation list first. It will be a mix of letters and numbers.')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form>
+				<form action="/publog" class="report_form" id="publog_report_log2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label">
+						Publish Log
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value=""class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Start Date:
+						</div>
+						<div class="col-75">
+							<input type="date" name="startdate" class="input-date" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							End Date:
+						</div>
+						<div class="col-75">
+							<input type="date" name="enddate" class="input-date" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('Shows a list of publishes between the given dates, and the changes made in them.  CURRENTLY this only will tell you if the overall shift applied to a default weekday schedule OR special day is removed or replaced by another. Changes to shifts themselves or floor layouts are not shown; coming soon.')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form>
+				<form action="/guestlog" class="report_form" id="guest_report_log2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label">
+						Guest Log
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Guest ID:
+						</div>
+						<div class="col-75">
+							<input type="text" name="guestid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox(
+						'Gives a very basic log of changes made to a given GuestID. GuestID is best found by running reservation list first. It will be a mix of letters and numbers.')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form>
+				<form action="/resoreport" class="report_form" id="resoreport_log2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label">
+						Reservation Report
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Start Date:
+						</div>
+						<div class="col-75">
+							<input type="date" name="startdate" class="input-date" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							End Date:
+						</div>
+						<div class="col-75">
+							<input type="date" name="enddate" class="input-date" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('Gives a very basic CSV reservation report for GC/OTC sites (draws from venue) within the given dates for the given RID.  Useful for sites mid-term, post term, or otherwise in a state that makes it difficult to pull this from conventional UI means.')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form>
+				<form action="/guestexport" class="report_form" id="guest_export_report_log2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label">
+						Guest Export
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Tags?
+						</div>
+						<div class="col-75">
+							<select name="includetags" required>
+							  <option value="true">True</option>
+							  <option value="false">False</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('Exports a CSV-formatted guest dump from given GC RID.')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form>
+				<form action="/phisto" class="report_form" id="publish_history_report_log2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label">
+						Publish History
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('Shows a list of publishes for a RID with the URLs to view their data directly, the publish timestamps, and **NEW** the logins of the users for the last three months worth of publishes, taken from Mixpanel (you can look farther back with the optional startdate parameter)')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form> 
+				<form action="/resolist" class="report_form" id="resolist_report_log2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label">
+						Reservation List
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Date:
+						</div>
+						<div class="col-75">
+							<input type="date" name="date" class="input-date" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('Lists reservations for the given RID for the given date. GuestCenter Only')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form>
+				<form action="/smslog" class="report_form" id="sms_report_form2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label">
+						SMS Logs (no dashes)
+					</div>
+					<div class="row">
+						<div class="col-25">
+							To:
+						</div>
+						<div class="col-75">
+							<input type="number" name="to_number" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							From:
+						</div>
+						<div class="col-75">
+							<input type="number" name="from_number" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Product:
+						</div>
+						<div class="col-75">
+							<select name="product" required>
+								<option value="ERB-NA">ERB-NA</option>
+							    <option value="ERB-EU">ERB-EU</option>
+							    <option value="GC">GuestCenter</option>
+								<option value="chat">Chat</option>
+								<option value="chatv2">Chat V2</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('Shows last 50 text messages matching given TO and/or FROM numbers, with any potential errors thrown by any of the texts.')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form>
+				<!-- TODO: insert mixpanel form here "mixpanel_export"
+				
+				<form action="/mixexport" class="report_form" id="mixexport_report_form2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label">
+						MixPanel
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-25">
+							Event:
+						</div>
+						<div class="col-75">
+							<!-- needs dropdown with options here with name=event
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('soon to come')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form> 
+				
+				-->				
+				<form action="/ipad" class="report_form" id="ipad_report_form2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label">
+						iPad Versions
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('Shows a list of iPads seen connecting to the given RID, the version of GC that each is running, and the last time that iPad was seen with that version.')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form> 
+				<form action="/feature" class="report_form" id="feature_report_log2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label">
+						Feature Toggles
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('Shows every feature toggle and whether the given RID is running it.')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form>
+				<form action="/restaurant" class="report_form" id="restaurant_details_report_log2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label">
+						Restaurant Details
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('Shows restaurant details that are stored in Venue.')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form>
+				<form action="/restpolicy" class="report_form" id="restaurant_policy_report_log2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label">
+						Restaurant Policy
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('Shows a list of policies for the given restaurant.')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form>
+				<form action="/consumerpolicy" class="report_form" id="consumer_policy_report_log2" target="form_results_iframe2" onsubmit="hideMap()" onsubmit="hideMap()">
+					<div class="form-label">
+						Consumer-Facing Policy
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="number" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('Shows a list of consumer-oriented policies for the given restaurant.')">
+						<input type="submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form>
+				<form action="/notop"  class="report_form" id="not_operational2" target="form_results_iframe2" onsubmit="hideMap()">
+					<div class="form-label">
+						Not Operational
+					</div>
+					<div class="row">
+						<div class="col-25">
+							RID:
+						</div>
+						<div class="col-75">
+							<input type="text" id="ip_input" name="rid" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('soon to come')">
+						<input type="submit" id="ip_tracker_submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form>
+				
+	<!-- ---------------------------------------------------------------------------------------------- -->
+			<!-------------------------------- IP tracker beta------------------------------ -->
+								
+				<form action="javascript:void(0);"  class="report_form" id="ip_tracker2" target="form_results_iframe2" onsubmit="return getJSONByIP()" method="GET">
+					<div class="form-label">
+						IP Tracker
+					</div>
+					<div class="row">
+						<div class="col-25">
+							IP:
+						</div>
+						<div class="col-75">
+							<input type="text" id="ip_input" name="ip" value="" class="input-number" required>
+						</div>
+					</div>
+					<div class="row">
+						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('This is in BETA. \n It is not exact and should never be shared with customer.')">
+						<input type="submit" id="ip_tracker_submit" value="Submit" class="submit-button-rightcolumn">
+					</div>
+				</form>
+								
+	<!-- ---------------------------------------------------------------------------------------------- -->
+
+			</div>
+		</div>
+		<div class="footer">
+			<div class="row">
+				<!--
+				<a href="http://www.geoplugin.com/geolocation/" target="_new">IP Geolocation</a> by <a href="http://www.geoplugin.com/" target="_new">geoPlugin</a>
+				This product includes GeoLite data created by MaxMind, available from
+				<a href="http://www.maxmind.com">http://www.maxmind.com</a>
+				-->
+			</div>
+		</div>
+	</body>
+</html>
+<!--
+changelog
+5-15-18
+4.1
+ + IP Tracker functionality
+  + javascript for showing/hiding the map
+  + Google Maps API for the map
+  + GeoPlugin API for the coordinates from the ip address
+  + CorsRequest to call the Geoplugin api, and get back JSON
+   \ this might be changed soon, was just the way I made it work
+  + HTML and CSS for the tracker_map
+  + changed font family to 'source-sans-pro,sans-serif' to match GC
+5-19-18
+4.2
+  + Added sidebar
+   + Documentation, version id, help&feedback, and credits
+5-20-18
+  + set right side menu to float right
+  + mimic GC sidebar style
+5-26-18
+  + Mimic GC open and close sidebar buttons
+6-16-18
+5.0
+  + Added Google Sign-In API(making do until it's hosted with this)
+  + Added block for users who are not signed in
+   \ https://stackoverflow.com/questions/32896597/gapi-auth2-externallyvisibleerror-invalid-cookiepolicy
+   \ https://github.com/GoogleChromeLabs/google-sign-in/blob/master/static/scripts/introduction.js
+   
+   
+   yaml parser: https://stackoverflow.com/questions/4335804/javascript-yaml-parser
+   
+6-22-18
+5.0.1
+  + created username display
+  + moved Google signin button to menu bar
+  + moved sign out button to underneath username_display
+  + Added new phisto functions
+   \ mixpanel-still needs to be finished
+   \ Not Operational
+  + Added popup alert box for custom messages
+   
+   https://support.rackspace.com/how-to/centos-hostname-change/
+   
+ -->
