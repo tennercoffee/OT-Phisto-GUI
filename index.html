@@ -1,5 +1,6 @@
 <html>
 	<head>
+		
 	    <title>Phisto</title>
 		<!--<meta name="google-signin-client_id" content="141625252556-ctfj4jaa1r9g66c660l5p573brf48u87.apps.googleusercontent.com">-->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -9,7 +10,7 @@
 		<link rel="shortcut icon" href="https://guestcenter.opentable.com/Content/img/icons/favicon.ico?v=gc-microapp-login-101" />
 		<script>
 			var profile_name;
-			
+
 			function closePopupMessage() {
 				document.getElementById("popup_alert").style.display = "none";
 			}
@@ -32,11 +33,11 @@
 				return xhr;
 			}
 			function getJSONByIP() {
-				var ip = document.getElementById("ip_input").value;	
+				var ip = document.getElementById("ip_input").value;
 				var url = 'http://www.geoplugin.net/json.gp?ip=' + ip;
 				var xhr = createRequest('GET', url);
 				xhr.send();
-					
+
 				if (geoplugin_status() == 200) {
 					var obj = this.responseData;
 					var lat,lng;
@@ -47,14 +48,14 @@
 						var json = JSON.parse(text);
 						lat = Number(json.geoplugin_latitude);
 						lng = Number(json.geoplugin_longitude);
-						
+
 						//then center map on those coordinates
 						map = new google.maps.Map(document.getElementById('tracker_map'), {
 						  center: {lat, lng},
 						  zoom: 14,
 						  mapTypeId: 'hybrid'
 						});
-						
+
 						//then add marker to map
 						var marker = new google.maps.Marker({
 						  position: {lat, lng},
@@ -79,7 +80,7 @@
 			/*function onSignIn(googleUser) {
 				var profile = googleUser.getBasicProfile();
 				profile_name = profile.getName();
-				
+
 				document.getElementById("username_display").innerHTML = profile_name;
 				document.getElementById("main_view_pane").style.display = "flex";
 				document.getElementById("sign_in_button").style.display = "none";
@@ -138,23 +139,23 @@
 				});
 			 }*/
 			/*
-			
+
 			--------------------------- in progress ---------------------------
-			
+
 			//parse data
 			function getIpadVersions(rid) {
 				//var url = 'http://www.geoplugin.net/json.gp?ip=' + ip;
 				var url = 'http://phisto-prod-sc.otenv.com/ipad?rid=' + rid
 				var xhr = createRequest('GET', url);
 				xhr.send();
-					
+
 				if (geoplugin_status() == 200) {
-				
+
 					//have to get json object, then get array from object, or is it the other way around?
 					//output copy in drive
 					//will have to run a for loop on the feature toggle one, get the option and the value
-				
-				
+
+
 					var obj = this.responseData;
 					var lat,lng;
 					// Response handlers.
@@ -166,18 +167,18 @@
 						ios_version = Number(json.iOSVersion);
 						last_seen = Number(json.lastSeen);
 
-						
+
 					};
 				}
 			}
-			
+
 			--------------------------- in progress ---------------------------
-			
+
 			*/
 		</script>
-		<style>	
+		<style>
 		/*
-		colors: 
+		colors:
 		select blue #4F98DB
 		 - hover #4f82db
 		select green #5fc782
@@ -190,7 +191,7 @@
 		 - hover 23496d
 		OT red: da3743
 		*/
-		
+
 		* {
 			border-radius: 3px;
 			cursor:default;
@@ -361,7 +362,7 @@
 		    flex-flow: row nowrap;
             flex-direction: row;
             flex-wrap: nowrap;
-            
+
 		}
 		header .center {
 		    display: flex;
@@ -415,7 +416,7 @@
 			display: inline-block;
 		}
 		#main_view_pane {
-			
+
 		}
 		.map {
 		    display: none;
@@ -613,13 +614,13 @@
 			direction:rtl;
 		}
 		::-webkit-scrollbar-track {
-			background: #464950;; 
+			background: #464950;;
 		}
 		::-webkit-scrollbar-thumb {
-			background: #FFF; 
+			background: #FFF;
 		}
 		::-webkit-scrollbar-thumb:hover {
-			background: #888; 
+			background: #888;
 		}
 		/* For Firefox */
 		input[type='number'] {
@@ -632,7 +633,7 @@
 			-webkit-appearance: none;
 			margin: 0;
 		}
-		
+
 		@media screen and (max-width: 600px) {
 			.col-25, .col-75 {
 				width: 100%;
@@ -689,7 +690,7 @@
 						</div>
 					</div>
 					<div id="sidebar_menu">
-						<a class="sidebar_menu_option" onclick="closeSidebar()">Reports</a>		
+						<a class="sidebar_menu_option" onclick="closeSidebar()">Reports</a>
 						<a href="/home" class="sidebar_menu_option" target="form_results_iframe">Documentation</a>
 						<a href="https://docs.google.com/forms/d/e/1FAIpQLSfmeWoG-cU_k_A6FEYQ0byCkr400Y7uvvCVSn1ZJ9gVdCTPYQ/viewform" target="form_results_iframe" class="sidebar_menu_option">Help & Feedback</a>
 					</div>
@@ -727,7 +728,7 @@
 				-->
 	        </div>
 	    </header>
-		
+
 		<!--base url for all OTcalls-->
 		<base href="http://phisto-prod-sc.otenv.com" />
 		<div id="popup_alert">
@@ -948,7 +949,7 @@
 						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('Shows a list of publishes for a RID with the URLs to view their data directly, the publish timestamps, and **NEW** the logins of the users for the last three months worth of publishes, taken from Mixpanel (you can look farther back with the optional startdate parameter)')">
 						<input type="submit" value="Submit" class="submit-button">
 					</div>
-				</form> 
+				</form>
 				<form action="/resolist" class="report_form" id="resolist_report_log" target="form_results_iframe">
 					<div class="form-label">
 						Reservation List
@@ -1277,7 +1278,7 @@
 						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('Shows a list of iPads seen connecting to the given RID, the version of GC that each is running, and the last time that iPad was seen with that version.')">
 						<input type="submit" value="Submit" class="submit-button">
 					</div>
-				</form> 
+				</form>
 				<form action="http://phisto-prod-sc.otenv.com/feature" class="report_form" id="feature_report_log" target="form_results_iframe">
 					<div class="form-label">
 						Feature Toggles
@@ -1345,7 +1346,7 @@
 						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button" onclick="showAlertBox('Shows a list of consumer-oriented policies for the given restaurant.')">
 						<input type="submit" value="Submit" class="submit-button">
 					</div>
-				</form>				
+				</form>
 				<form action="/notop"  class="report_form" id="not_operational" target="form_results_iframe">
 					<div class="form-label">
 						Not Operational
@@ -1366,11 +1367,11 @@
 			</div>
 			<iframe class="results" name="form_results_iframe">
 			</iframe>
-			
+
 								<!--right-side-->
 
 			<div id="tracker_map" class="map"></div>
-			
+
 			<iframe class="results" name="form_results_iframe2" id="form_results_iframe2">
 			</iframe>
 
@@ -1584,7 +1585,7 @@
 						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('Shows a list of publishes for a RID with the URLs to view their data directly, the publish timestamps, and **NEW** the logins of the users for the last three months worth of publishes, taken from Mixpanel (you can look farther back with the optional startdate parameter)')">
 						<input type="submit" value="Submit" class="submit-button-rightcolumn">
 					</div>
-				</form> 
+				</form>
 				<form action="/resolist" class="report_form" id="resolist_report_log2" target="form_results_iframe2" onsubmit="hideMap()">
 					<div class="form-label">
 						Reservation List
@@ -1650,7 +1651,7 @@
 					</div>
 				</form>
 				<!-- TODO: insert mixpanel form here "mixpanel_export"
-				
+
 				<form action="/mixexport" class="report_form" id="mixexport_report_form2" target="form_results_iframe2" onsubmit="hideMap()">
 					<div class="form-label">
 						MixPanel
@@ -1675,9 +1676,9 @@
 						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('soon to come')">
 						<input type="submit" value="Submit" class="submit-button-rightcolumn">
 					</div>
-				</form> 
-				
-				-->				
+				</form>
+
+				-->
 				<form action="/ipad" class="report_form" id="ipad_report_form2" target="form_results_iframe2" onsubmit="hideMap()">
 					<div class="form-label">
 						iPad Versions
@@ -1694,7 +1695,7 @@
 						<img src="http://images.clipartpanda.com/question-purzen_Icon_with_question_mark_Vector_Clipart.png" class="help button-rightcolumn" onclick="showAlertBox('Shows a list of iPads seen connecting to the given RID, the version of GC that each is running, and the last time that iPad was seen with that version.')">
 						<input type="submit" value="Submit" class="submit-button-rightcolumn">
 					</div>
-				</form> 
+				</form>
 				<form action="/feature" class="report_form" id="feature_report_log2" target="form_results_iframe2" onsubmit="hideMap()">
 					<div class="form-label">
 						Feature Toggles
@@ -1780,10 +1781,10 @@
 						<input type="submit" id="ip_tracker_submit" value="Submit" class="submit-button-rightcolumn">
 					</div>
 				</form>
-				
+
 	<!-- ---------------------------------------------------------------------------------------------- -->
 			<!-------------------------------- IP tracker beta------------------------------ -->
-								
+
 				<form action="javascript:void(0);"  class="report_form" id="ip_tracker2" target="form_results_iframe2" onsubmit="return getJSONByIP()" method="GET">
 					<div class="form-label">
 						IP Tracker
@@ -1801,7 +1802,7 @@
 						<input type="submit" id="ip_tracker_submit" value="Submit" class="submit-button-rightcolumn">
 					</div>
 				</form>
-								
+
 	<!-- ---------------------------------------------------------------------------------------------- -->
 
 			</div>
@@ -1844,10 +1845,10 @@ changelog
   + Added block for users who are not signed in
    \ https://stackoverflow.com/questions/32896597/gapi-auth2-externallyvisibleerror-invalid-cookiepolicy
    \ https://github.com/GoogleChromeLabs/google-sign-in/blob/master/static/scripts/introduction.js
-   
-   
+
+
    yaml parser: https://stackoverflow.com/questions/4335804/javascript-yaml-parser
-   
+
 6-22-18
 5.0.1
   + created username display
@@ -1857,7 +1858,7 @@ changelog
    \ mixpanel-still needs to be finished
    \ Not Operational
   + Added popup alert box for custom messages
-   
+
    https://support.rackspace.com/how-to/centos-hostname-change/
-   
+
  -->
