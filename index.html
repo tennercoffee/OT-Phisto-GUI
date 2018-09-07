@@ -123,28 +123,62 @@
 					menu.style.display = "block";
 				}
 			}
-			function closeRightSide() {
-				if (document.getElementById("rightButton").style.display === "block") {
-					document.getElementById("form_results_iframe2").style.display = "none";
-					document.getElementById("form-panel2").style.display = "none";
-					document.getElementById("rightButton").style.display = "none";
-				}else {
-					document.getElementById("form_results_iframe2").style.display = "block";
-					document.getElementById("form-panel2").style.display = "block";
-					document.getElementById("rightButton").style.display = "block";
+
+			function toggleElement(x) {
+				console.log(x);
+				if (document.getElementById(x).style.display == "flex"){
+						console.log("Hey I'm inside the IF statement!");
+						document.getElementById(x).style.display = "none";
+					}
+				else if (document.getElementById(x).style.display == "none"){
+						console.log("Hey I'm inside the ELSE IF statement!");
+						document.getElementById(x).style.display = "flex";
 				}
 			}
+
 			function closeLeftSide() {
-   			if (document.getElementById("leftButton").style.display === "block") {
-					document.getElementById("form_results_iframe").style.display = "none";
-					document.getElementById("form-panel").style.display = "none";
-					document.getElementById("leftButton").style.display = "none";
-			}else {
-				document.getElementById("form_results_iframe").style.display = "block";
-				document.getElementById("form-panel").style.display = "block";
-				document.getElementById("leftButton").style.display = "block";
+				  toggleElement("form-panel");
+					toggleElement("button-left");
+					toggleElement("form_results_iframe");
+				}
+		  function closeRightSide() {
+						toggleElement("form-panel2");
+						toggleElement("button-right");
+						toggleElement("form_results_iframe2");
+					}
+			/* Toggle Display from Block > Flex > Block
+			// On Button click
+
+			function closeRightSide() {
+				var arrow  = document.getElementById("button-right")
+
+				//If Display is Flexed, > Block
+				if (arrow.style.display == "block" || arrow.style.displ == "none") {
+					document.getElementById("form_results_iframe2").style.display == "flex";
+					document.getElementById("form-panel2").style.display = "flex";
+					document.getElementById("button-left").style.display = "flex";
+				}
+				// Else Display is Block, > Flex
+				else {
+					document.getElementById("form_results_iframe2").style.display == "block";
+					document.getElementById("form-panel2").style.display = "block";
+					document.getElementById("button-right").style.display = "block";
+				}
 			}
-		}
+		 	function closeLeftSide() {
+   	 		if (document.getElementById("button-left").style.display == "flex") {
+		 			console.log("Hey I'm inside the IF statement!");
+		 			document.getElementById("form_results_iframe").style.display = "none";
+		 			document.getElementById("form-panel").style.display = "none";
+		 			document.getElementById("button-left").style.display = "none";
+		 	}else {
+		 		console.log("Hey I'm inside the ELSE statement!");
+		 		document.getElementById("form_results_iframe").style.display = "flex";
+		 		document.getElementById("form-panel").style.display = "flex";
+		 		document.getElementById("button-left").style.display = "flex";
+		 	}
+		} */
+
 			/*function signOut() {
 				var auth2 = gapi.auth2.getAuthInstance();
 				auth2.signOut().then(function () {
@@ -199,13 +233,29 @@
 			position: absolute;
 			bottom: 0;
 			width:  100px;
-			height: 50px;
+			height: 50px
 		}
-		#leftButton {
+		#button-left {
 			left: 0;
+			background-color: #4F98DB;
+			color: white;
+			padding: 16px;
+			border: none;
+			cursor: pointer;
+			max-width: 15.75%;
+			display: flex;
 		}
-		#rightButton {
+		#button-right {
 			right: 0;
+			background-color: #4F98DB;
+			color: white;
+			padding: 16px;
+			border: none;
+			cursor: pointer;
+			max-width: 15.75%;
+		}
+		.button:active {
+  		transform: translateY(2.5px)
 		}
 		.button-rightcolumn {
 			float:right;
@@ -238,7 +288,7 @@
 			float:left;
 			margin-left:20px;
 		}
-		.dropbtn {
+		.dropbtn, #button-left, #button-right{
 			background-color: #4F98DB;
 			color: white;
 			padding: 16px;
@@ -317,8 +367,8 @@
 		#form-panel2 .dropdown-content {
 			right:0;
 		}
-		#form_results_iframe2 {
-			display:none;
+		#form_results_iframe2  {
+			display: none;
 			margin-right: 5px;
 		}
 		.help {
@@ -552,6 +602,11 @@
 		.submit-button-rightcolumn {
 			float:left;
 		}
+		.toggle_arrow {
+			display: flex;
+			position: absolute;
+			right: calc(50% - 12px);
+		}
 		#username_container {
 			display:none;
 			position:absolute;
@@ -734,7 +789,7 @@
 		</div>
 
 		<div class="view-pane" id="main_view_pane">
-			<div class="form-panel" id="form-panel">
+			<div class="form-panel" id="form-panel" style="display: flex;">
 				<div class="dropdown">
 				  <button class="dropbtn">Add a Report</button>
 				  <div class="dropdown-content">
@@ -1359,26 +1414,26 @@
 				</form>
 			</div>
 			<!--Left Panel Button-->
-			<button class="button" id="leftButton" onclick="closeRightSide()">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+			<button class="button" id="button-left" onclick="closeRightSide()" style="display: flex;">
+				<svg class="toggle_arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
 					<path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm1 17v-4h-8v-2h8v-4l6 5-6 5z"/>
 				</svg>
 			</button>
-			<iframe class="results" name="form_results_iframe" id="form_results_iframe">
+			<iframe class="results" name="form_results_iframe" id="form_results_iframe" style="display: flex;">
 			</iframe>
 
 								<!--right-side-->
 			<div id="tracker_map" class="map"></div>
 
-			<iframe class="results" name="form_results_iframe2" id="form_results_iframe2">
+			<iframe class="results" name="form_results_iframe2" id="form_results_iframe2" style= "display: flex;">
 			</iframe>
 
-		<button class="button" id="rightButton" onclick="closeLeftSide()">
-			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+		<button class="button" id="button-right" onclick="closeLeftSide()" style="display: flex;">
+			<svg class="toggle_arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
 				<path d="M12 24c6.627 0 12-5.373 12-12s-5.373-12-12-12-12 5.373-12 12 5.373 12 12 12zm-1-17v4h8v2h-8v4l-6-5 6-5z"/>
 			</svg>
 		</button>
-			<div class="form-panel" id="form-panel2">
+			<div class="form-panel" id="form-panel2" style="display: flex;">
 				<div class="dropdown">
 				  <button class="dropbtn">Add a Report</button>
 				  <div class="dropdown-content">
