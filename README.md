@@ -1,6 +1,6 @@
 # OT-Phisto-GUI
 
-<h3>DEVELOPMENT HAS CONTINUED IN A PRIVATE REPOSITORY<H3>
+<h3>DEVELOPMENT HAS CONTINUED IN A PRIVATE REPOSITORY<h3>
 
 This repository if from a project for the Customer Service department at OpenTable. It is a simple, one page application, that is built to return reports from the backend systems for the OpenTable products. The server is called Phisto, short for Publish History, and has evolved to supply multiple reports of events and occurances. 
 
