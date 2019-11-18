@@ -9,7 +9,6 @@
 		<link rel="shortcut icon" href="https://guestcenter.opentable.com/Content/img/icons/favicon.ico?v=gc-microapp-login-101" />
 		<script>
 			var profile_name;
-
 			function closePopupMessage() {
 				document.getElementById("popup_alert").style.display = "none";
 			}
@@ -36,7 +35,6 @@
 				var url = 'http://www.geoplugin.net/json.gp?ip=' + ip;
 				var xhr = createRequest('GET', url);
 				xhr.send();
-
 				if (geoplugin_status() == 200) {
 					var obj = this.responseData;
 					var lat,lng;
@@ -47,20 +45,17 @@
 						var json = JSON.parse(text);
 						lat = Number(json.geoplugin_latitude);
 						lng = Number(json.geoplugin_longitude);
-
 						//then center map on those coordinates
 						map = new google.maps.Map(document.getElementById('tracker_map'), {
 						  center: {lat, lng},
 						  zoom: 14,
 						  mapTypeId: 'hybrid'
 						});
-
 						//then add marker to map
 						var marker = new google.maps.Marker({
 						  position: {lat, lng},
 						  map: map
 						});
-
 						// show map, hide results iFrame
 						if(document.getElementById('tracker_map').style.display = 'none') {
 							document.getElementById('form_results_iframe2').style.display = 'none';
@@ -79,7 +74,6 @@
 			/*function onSignIn(googleUser) {
 				var profile = googleUser.getBasicProfile();
 				profile_name = profile.getName();
-
 				document.getElementById("username_display").innerHTML = profile_name;
 				document.getElementById("main_view_pane").style.display = "flex";
 				document.getElementById("sign_in_button").style.display = "none";
@@ -129,6 +123,30 @@
 					menu.style.display = "block";
 				}
 			}
+
+			function toggleElement(x) {
+				console.log(x);
+				if (document.getElementById(x).style.display == "flex"){
+						console.log("Hey I'm inside the IF statement!");
+						document.getElementById(x).style.display = "none";
+					}
+				else if (document.getElementById(x).style.display == "none"){
+						console.log("Hey I'm inside the ELSE IF statement!");
+						document.getElementById(x).style.display = "flex";
+				}
+			}
+
+			function closeLeftSide() {
+				toggleElement("form-panel");
+				toggleElement("button-left");
+				toggleElement("form_results_iframe");
+			}
+		  	function closeRightSide() {
+				toggleElement("form-panel2");
+				toggleElement("button-right");
+				toggleElement("form_results_iframe2");
+			}
+
 			/*function signOut() {
 				var auth2 = gapi.auth2.getAuthInstance();
 				auth2.signOut().then(function () {
@@ -153,12 +171,10 @@
 		 - hover 23496d
 		OT red: da3743
 		*/
-
 		@font-face {
 		    font-family:"Brandon Text";
 		    src: url('https://cdn.otstatic.com/common/font/Brandon/Brandon_txt_reg-webfont.woff2') format('woff2'), url('https://cdn.otstatic.com/common/font/Brandon/Brandon_txt_reg-webfont.woff') format('woff');
 		}
-
 		* {
 			border-radius: 3px;
 			cursor:default;
@@ -180,6 +196,34 @@
 		}
 		body {
 			margin:0px;
+		}
+		.button {
+			position: absolute;
+			bottom: 0;
+			width:  100px;
+			height: 50px
+		}
+		#button-left {
+			left: 0;
+			background-color: #4F98DB;
+			color: white;
+			padding: 16px;
+			border: none;
+			cursor: pointer;
+			max-width: 15.75%;
+			display: flex;
+		}
+		#button-right {
+			right: 0;
+			background-color: #4F98DB;
+			color: white;
+			padding: 16px;
+			border: none;
+			cursor: pointer;
+			max-width: 15.75%;
+		}
+		.button:active {
+  		transform: translateY(2.5px)
 		}
 		.button-rightcolumn {
 			float:right;
@@ -212,7 +256,7 @@
 			float:left;
 			margin-left:20px;
 		}
-		.dropbtn {
+		.dropbtn, #button-left, #button-right{
 			background-color: #4F98DB;
 			color: white;
 			padding: 16px;
@@ -291,8 +335,8 @@
 		#form-panel2 .dropdown-content {
 			right:0;
 		}
-		#form_results_iframe2 {
-			display:none;
+		#form_results_iframe2  {
+			display: none;
 			margin-right: 5px;
 		}
 		.help {
@@ -331,7 +375,6 @@
 		    flex-flow: row nowrap;
             flex-direction: row;
             flex-wrap: nowrap;
-
 		}
 		header .center {
 		    display: flex;
@@ -385,7 +428,6 @@
 			display: inline-block;
 		}
 		#main_view_pane {
-
 		}
 		.map {
 		    display: none;
@@ -528,6 +570,11 @@
 		.submit-button-rightcolumn {
 			float:left;
 		}
+		.toggle_arrow {
+			display: flex;
+			position: absolute;
+			right: calc(50% - 12px);
+		}
 		#username_container {
 			display:none;
 			position:absolute;
@@ -598,14 +645,12 @@
 		input[type='number'] {
 			-moz-appearance:textfield;
 		}
-
 		/* Webkit browsers like Safari and Chrome */
 		input[type=number]::-webkit-inner-spin-button,
 		input[type=number]::-webkit-outer-spin-button {
 			-webkit-appearance: none;
 			margin: 0;
 		}
-
 		@media screen and (max-width: 600px) {
 			.col-25, .col-75 {
 				width: 100%;
@@ -712,7 +757,7 @@
 		</div>
 
 		<div class="view-pane" id="main_view_pane">
-			<div class="form-panel">
+			<div class="form-panel" id="form-panel" style="display: flex;">
 				<div class="dropdown">
 				  <button class="dropbtn">Add a Report</button>
 				  <div class="dropdown-content">
@@ -1336,17 +1381,27 @@
 					</div>
 				</form>
 			</div>
-			<iframe class="results" name="form_results_iframe">
+			<!--Left Panel Button-->
+			<button class="button" id="button-left" onclick="closeRightSide()" style="display: flex;">
+				<svg class="toggle_arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+					<path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm1 17v-4h-8v-2h8v-4l6 5-6 5z"/>
+				</svg>
+			</button>
+			<iframe class="results" name="form_results_iframe" id="form_results_iframe" style="display: flex;">
 			</iframe>
 
 								<!--right-side-->
-
 			<div id="tracker_map" class="map"></div>
 
-			<iframe class="results" name="form_results_iframe2" id="form_results_iframe2">
+			<iframe class="results" name="form_results_iframe2" id="form_results_iframe2" style= "display: flex;">
 			</iframe>
 
-			<div class="form-panel" id="form-panel2">
+		<button class="button" id="button-right" onclick="closeLeftSide()" style="display: flex;">
+			<svg class="toggle_arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+				<path d="M12 24c6.627 0 12-5.373 12-12s-5.373-12-12-12-12 5.373-12 12 5.373 12 12 12zm-1-17v4h8v2h-8v4l-6-5 6-5z"/>
+			</svg>
+		</button>
+			<div class="form-panel" id="form-panel2" style="display: flex;">
 				<div class="dropdown">
 				  <button class="dropbtn">Add a Report</button>
 				  <div class="dropdown-content">
@@ -1786,10 +1841,7 @@ changelog
   + Added block for users who are not signed in
    \ https://stackoverflow.com/questions/32896597/gapi-auth2-externallyvisibleerror-invalid-cookiepolicy
    \ https://github.com/GoogleChromeLabs/google-sign-in/blob/master/static/scripts/introduction.js
-
-
    yaml parser: https://stackoverflow.com/questions/4335804/javascript-yaml-parser
-
 6-22-18
 5.0.1
   + created username display
@@ -1799,7 +1851,5 @@ changelog
    \ mixpanel-still needs to be finished
    \ Not Operational
   + Added popup alert box for custom messages
-
    https://support.rackspace.com/how-to/centos-hostname-change/
-
  -->
